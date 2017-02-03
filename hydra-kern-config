@@ -1,0 +1,69 @@
+#!/bin/bash
+set -e; set -o pipefail
+
+hydra_path="$HOME/kerndev/kernels/hydra"
+
+# Configure kernel setting to $1 for settings in $@...
+function config()
+{
+	choice=$1
+	shift
+
+	for setting in $@; do
+		scripts/config --$choice $setting
+	done
+}
+
+# Enable kernal settings $@...
+function kenable()
+{
+	config enable $@
+}
+
+# Disable kernal settings $@...
+function kdisable()
+{
+	config disable $@
+}
+
+pushd $hydra_path
+
+make defconfig
+
+# Show extra version info.
+kenable localversion_auto
+
+# Required for systemd.
+kenable fhandle
+
+# We like devtmpfs.
+kenable devtmpfs
+
+# Debugging settings.
+kenable debug_info debug_info_split debug_info_dwarf4 gdb_scripts frame_pointer
+kdisable debug_info_reduced debug_rodata
+
+# Networking.
+kenable bnx2 fujitsu_es
+
+# Some HP/AMD-specific stuff
+kenable edac_amd64 amdkfd amd_iommu_v2 edac_mce_amd hp_watchdog hpwdt_nmi_decoding pata_amd
+
+# SCSI/SAS
+kenable scsi_lowlevel scsi_hpsa scsi_sas_libsas scsi_sas_ata
+
+# Intelligent monitoring.
+kenable ipmi_handler ipmi_si acpi_ipmi ipmi_ssif ipmi_watchdog ipmi_poweroff
+
+# VM, because why not?
+kenable kvm kvm_amd
+
+# Enable DAX if it's even possible
+kenable dev_dax
+
+# We want THP, much fun!
+kenable transparent_hugepage transparent_hugepage_always
+
+make olddefconfig
+
+popd

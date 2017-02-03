@@ -1,0 +1,10 @@
+#!/bin/bash
+set -e; set -o pipefail
+
+hydra_path="$HOME/kerndev/kernels/hydra"
+
+hydra-kern-config
+hydra-kern-build
+
+scp "$hydra_path/arch/x86/boot/bzImage" root@hydra:/boot/vmlinuz-dev
+ssh root@hydra "grub-reboot 2; reboot"

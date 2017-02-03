@@ -1,0 +1,15 @@
+#!/bin/bash
+set -e; set -o pipefail
+
+hydra_path="$HOME/kerndev/kernels/hydra"
+
+hydra-kern-config
+
+pushd $hydra_path
+
+# Ref: http://stackoverflow.com/a/6481016
+cores=$(grep -c ^processor /proc/cpuinfo)
+# 1 extra thread to account for I/O waiting.
+make -j $((cores+1))
+
+popd
