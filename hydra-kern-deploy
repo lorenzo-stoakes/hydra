@@ -8,9 +8,26 @@ function fatal()
 }
 
 hydra_path="$HOME/kerndev/kernels/hydra"
+reboot="kexec"
+cmdline="rw root=/dev/sda1 console=tty0 console=ttyS0,115200n8"
+phys_part="2" # grub partition num.
 
 hydra-kern-config
 hydra-kern-build
 
 scp "$hydra_path/arch/x86/boot/bzImage" root@hydra:/boot/vmlinuz-dev
-ssh root@hydra "grub-reboot 2; reboot"
+
+cmd=""
+case "$reboot" in
+	kexec)
+		cmd='kexec --command-line="'"$cmdline"'" /boot/vmlinuz-dev'
+	;;
+	phys)
+		cmd="grub-reboot $phys_part; reboot"
+	;;
+	*)
+		fatal "reboot type '$reboot' not recognised."
+	;;
+esac
+
+ssh root@hydra "$cmd"
