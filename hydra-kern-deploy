@@ -1,6 +1,12 @@
 #!/bin/bash
 set -e; set -o pipefail
 
+function fatal()
+{
+	echo $@ >&2
+	exit 1
+}
+
 hydra_path="$HOME/kerndev/kernels/hydra"
 
 hydra-kern-config
