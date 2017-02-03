@@ -64,6 +64,9 @@ kenable dev_dax
 # We want THP, much fun!
 kenable transparent_hugepage transparent_hugepage_always
 
+# Enable page table dump.
+kenable x86_ptdump
+
 make olddefconfig
 
 popd
