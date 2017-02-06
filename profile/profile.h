@@ -23,6 +23,7 @@ struct thread_set {
 /* helpers.c */
 void fatal(char *fmt, ...);
 void get_node(unsigned int *node_ptr);
+int get_nr_cores(void);
 
 /* profile.c */
 void do_profile(void);

@@ -1,6 +1,5 @@
 #include <sched.h>
 #include <string.h>
-#include <unistd.h>
 
 #include "profile.h"
 
@@ -59,7 +58,7 @@ static void create(int core, thread_func fn, struct thread_set *set)
 struct thread_set *create_thread_set(thread_func fn)
 {
 	int i;
-	int nr_cores = (int)sysconf(_SC_NPROCESSORS_ONLN);
+	int nr_cores = get_nr_cores();
 	struct thread_set *ret = malloc(sizeof(struct thread_set));
 
 	ret->nr_cores = nr_cores;

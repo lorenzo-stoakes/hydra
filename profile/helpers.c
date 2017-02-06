@@ -17,6 +17,12 @@ void fatal(char *fmt, ...)
 	exit(EXIT_FAILURE);
 }
 
+/* Determine the total number of cores in the system. */
+int get_nr_cores(void)
+{
+	return (int)sysconf(_SC_NPROCESSORS_ONLN);
+}
+
 /* Determine current thread's NUMA node, fatal if syscall fails. */
 void get_node(unsigned int *node_ptr)
 {
