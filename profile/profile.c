@@ -11,11 +11,17 @@
  * 6. Report stats and repeat...
  */
 
+/* Run in each thread. */
+static void do_thread(struct thread *thread)
+{
+	/* Do something... */
+}
+
 /* Execute the profiler. */
 void do_profile(void)
 {
 	int i;
-	struct thread_set *set = create_thread_set();
+	struct thread_set *set = create_thread_set(do_thread);
 
 	join_thread_set(set);
 	for (i = 0; i < set->nr_cores; i++) {

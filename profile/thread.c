@@ -34,15 +34,19 @@ static void *do_thread(void *ptr)
 	set_affinity(thread);
 	populate(thread);
 
+	/* Now do some actual work. */
+	thread->fn(thread);
+
 	return NULL;
 }
 
 /* Create and execute new thread, storing details in *thread. */
-static void create(int core, struct thread *thread)
+static void create(int core, thread_func fn, struct thread *thread)
 {
 	int err;
 
 	thread->core = core;
+	thread->fn = fn;
 	err = pthread_create(&thread->id, NULL, do_thread, thread);
 	if (err != 0)
 		fatal("%d: pthread_create() failed: %s\n", thread->core,
@@ -50,7 +54,7 @@ static void create(int core, struct thread *thread)
 }
 
 /* Creates a set of threads for each system core. */
-struct thread_set *create_thread_set(void)
+struct thread_set *create_thread_set(thread_func fn)
 {
 	int i;
 	int nr_cores = (int)sysconf(_SC_NPROCESSORS_ONLN);
@@ -60,7 +64,7 @@ struct thread_set *create_thread_set(void)
 	ret->threads = calloc(nr_cores, sizeof(struct thread));
 
 	for (i = 0; i < nr_cores; i++)
-		create(i, &ret->threads[i]);
+		create(i, fn, &ret->threads[i]);
 
 	return ret;
 }
