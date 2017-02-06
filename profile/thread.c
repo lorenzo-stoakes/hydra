@@ -41,10 +41,12 @@ static void *do_thread(void *ptr)
 }
 
 /* Create and execute new thread, storing details in *thread. */
-static void create(int core, thread_func fn, struct thread *thread)
+static void create(int core, thread_func fn, struct thread_set *set)
 {
 	int err;
+	struct thread *thread = &set->threads[core];
 
+	thread->set = set;
 	thread->core = core;
 	thread->fn = fn;
 	err = pthread_create(&thread->id, NULL, do_thread, thread);
@@ -64,7 +66,7 @@ struct thread_set *create_thread_set(thread_func fn)
 	ret->threads = calloc(nr_cores, sizeof(struct thread));
 
 	for (i = 0; i < nr_cores; i++)
-		create(i, fn, &ret->threads[i]);
+		create(i, fn, ret);
 
 	return ret;
 }

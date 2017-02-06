@@ -5,7 +5,10 @@
 struct thread;
 typedef void (*thread_func)(struct thread *);
 
+struct thread_set;
 struct thread {
+	struct thread_set *set;
+
 	pthread_t id;
 	unsigned int core, node;
 
