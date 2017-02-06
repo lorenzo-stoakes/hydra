@@ -38,16 +38,21 @@ static void *do_thread(void *ptr)
 }
 
 /* Create and execute new thread, storing details in *thread. */
-static int create(int core, struct thread *thread)
+static void create(int core, struct thread *thread)
 {
+	int err;
+
 	thread->core = core;
-	return pthread_create(&thread->id, NULL, do_thread, thread);
+	err = pthread_create(&thread->id, NULL, do_thread, thread);
+	if (err != 0)
+		fatal("%d: pthread_create() failed: %s\n", thread->core,
+			strerror(err));
 }
 
 /* Creates a set of threads for each system core. */
 struct thread_set *create_thread_set(void)
 {
-	int i, err;
+	int i;
 	int nr_cores = (int)sysconf(_SC_NPROCESSORS_ONLN);
 	struct thread_set *ret = malloc(sizeof(struct thread_set));
 
@@ -55,9 +60,7 @@ struct thread_set *create_thread_set(void)
 	ret->threads = calloc(nr_cores, sizeof(struct thread));
 
 	for (i = 0; i < nr_cores; i++)
-		if ((err = create(i, &ret->threads[i])) != 0)
-			fatal("%d: thread_create() failed: %s\n",
-				ret->threads[i].core, strerror(err));
+		create(i, &ret->threads[i]);
 
 	return ret;
 }
