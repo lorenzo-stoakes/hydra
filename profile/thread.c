@@ -70,7 +70,7 @@ void join_thread_set(struct thread_set *set)
 	for (i = 0; i < set->nr_cores; i++) {
 		struct thread *thread = &set->threads[i];
 
-		if ((err = pthread_join(thread->id, &thread->ret)) != 0)
+		if ((err = pthread_join(thread->id, NULL)) != 0)
 			fprintf(stderr, "%d: pthread_join() failed: %s\n",
 				thread->core, strerror(err));
 	}

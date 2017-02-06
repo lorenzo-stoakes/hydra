@@ -5,8 +5,6 @@
 struct thread {
 	pthread_t id;
 	unsigned int core, node;
-
-	void *ret;
 };
 
 struct thread_set {
