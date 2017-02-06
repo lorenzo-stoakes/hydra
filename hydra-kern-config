@@ -33,6 +33,9 @@ make defconfig
 # Show extra version info.
 kenable localversion_auto
 
+# Useful to have /proc/config.gz.
+kenable ikconfig ikconfig_proc
+
 # Required for systemd.
 kenable fhandle
 
