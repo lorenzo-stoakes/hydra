@@ -22,6 +22,7 @@ struct thread_set {
 
 /* helpers.c */
 void fatal(char *fmt, ...);
+int get_anon_huge(unsigned long addr);
 void get_node(unsigned int *node_ptr);
 int get_nr_cores(void);
 
